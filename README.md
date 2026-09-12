@@ -106,4 +106,7 @@ Se abre en `http://localhost:5173`. Si cambiaste el puerto del backend, actualiz
 | GET    | `/api/animals/:id/comments`    | Comentarios de un animal + calificación promedio |
 | POST   | `/api/animals/:id/comments`    | Crea un comentario (`autor`, `calificacion` 1-5, `comentario` mín. 10 caracteres) |
 
+<<<<<<< HEAD
 Prueba de commits
+=======
+>>>>>>> 485edffd38a8488977320d75e17a6a7d2cb889df
