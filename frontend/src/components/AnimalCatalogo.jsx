@@ -41,7 +41,7 @@ function AnimalCatalogo() {
   // Cargar animales según los filtros
   useEffect(() => {
     setCargando(true);
-    let url = `${API_URL}/animales`;
+    let url = `${API_URL}/animals`;
 
     // Construir query params si hay filtros activos
     const params = new URLSearchParams();
@@ -69,7 +69,7 @@ function AnimalCatalogo() {
     if (!animalSeleccionado) return;
 
     setCargandoComentarios(true);
-    fetch(`${API_URL}/animales/${animalSeleccionado.id}/comentarios`)
+    fetch(`${API_URL}/animals/${animalSeleccionado.id}/comments`)
       .then((res) => res.json())
       .then((data) => {
         setComentarios(data);
@@ -88,7 +88,7 @@ function AnimalCatalogo() {
     setEnviandoComentario(true);
 
     try {
-      const res = await fetch(`${API_URL}/animales/${animalSeleccionado.id}/comentarios`, {
+      const res = await fetch(`${API_URL}/animals/${animalSeleccionado.id}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
