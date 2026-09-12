@@ -20,6 +20,8 @@ function AnimalCatalogo() {
 
   // Estado para el formulario de comentario
   const [nuevoComentario, setNuevoComentario] = useState('');
+  const [nuevoAutor, setNuevoAutor] = useState('');
+  const [nuevaCalificacion, setNuevaCalificacion] = useState(5);
   const [enviandoComentario, setEnviandoComentario] = useState(false);
   const [errorComentario, setErrorComentario] = useState(null);
 
@@ -93,7 +95,11 @@ function AnimalCatalogo() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ texto: nuevoComentario })
+        body: JSON.stringify({
+          autor: nuevoAutor,
+          calificacion: parseInt(nuevaCalificacion),
+          comentario: nuevoComentario
+        })
       });
 
       if (!res.ok) {
@@ -108,6 +114,8 @@ function AnimalCatalogo() {
         const nuevoComentarioData = await res.json();
         setComentarios([...comentarios, nuevoComentarioData]);
         setNuevoComentario('');
+        setNuevoAutor('');
+        setNuevaCalificacion(5);
       }
     } catch (err) {
       setErrorComentario('Error de conexión');
@@ -207,7 +215,7 @@ function AnimalCatalogo() {
                 <strong>Edad:</strong> {animalSeleccionado.edad || 'N/A'} años
               </p>
               <p>
-                <strong>Descripción:</strong> {animalSeleccionado.descripcion || 'Sin descripción'}
+                <strong>Estado:</strong> {animalSeleccionado.disponible ? '✅ Disponible' : '❌ No disponible'}
               </p>
 
               {/* Comentarios */}
@@ -232,9 +240,9 @@ function AnimalCatalogo() {
                         }}
                       >
                         <p style={{ margin: '0 0 0.25rem 0', fontStyle: 'italic', color: '#666' }}>
-                          {comentario.usuario || 'Anónimo'}
+                          <strong>{comentario.autor}</strong> - ⭐ {comentario.calificacion}/5
                         </p>
-                        <p style={{ margin: 0 }}>{comentario.texto}</p>
+                        <p style={{ margin: 0 }}>{comentario.comentario}</p>
                       </li>
                     ))}
                   </ul>
@@ -246,15 +254,68 @@ function AnimalCatalogo() {
                   style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}
                 >
                   <div style={{ marginBottom: '0.5rem' }}>
+                    <label htmlFor="autor-input">
+                      <strong>Nombre (autor):</strong>
+                    </label>
+                    <input
+                      id="autor-input"
+                      type="text"
+                      value={nuevoAutor}
+                      onChange={(e) => {
+                        setNuevoAutor(e.target.value);
+                        setErrorComentario(null);
+                      }}
+                      placeholder="Tu nombre..."
+                      style={{
+                        width: '100%',
+                        marginTop: '0.25rem',
+                        padding: '0.5rem',
+                        fontFamily: 'sans-serif',
+                        borderRadius: '4px',
+                        border: '1px solid #ddd',
+                        boxSizing: 'border-box'
+                      }}
+                      disabled={enviandoComentario}
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <label htmlFor="calificacion-input">
+                      <strong>Calificación:</strong>
+                    </label>
+                    <select
+                      id="calificacion-input"
+                      value={nuevaCalificacion}
+                      onChange={(e) => {
+                        setNuevaCalificacion(e.target.value);
+                        setErrorComentario(null);
+                      }}
+                      style={{
+                        marginLeft: '0.5rem',
+                        padding: '0.5rem',
+                        borderRadius: '4px',
+                        border: '1px solid #ddd'
+                      }}
+                      disabled={enviandoComentario}
+                    >
+                      <option value="1">⭐ 1 - Muy malo</option>
+                      <option value="2">⭐⭐ 2 - Malo</option>
+                      <option value="3">⭐⭐⭐ 3 - Regular</option>
+                      <option value="4">⭐⭐⭐⭐ 4 - Bueno</option>
+                      <option value="5">⭐⭐⭐⭐⭐ 5 - Excelente</option>
+                    </select>
+                  </div>
+
+                  <div style={{ marginBottom: '0.5rem' }}>
                     <label htmlFor="comentario-input">
-                      <strong>Agregar comentario:</strong>
+                      <strong>Comentario:</strong>
                     </label>
                     <textarea
                       id="comentario-input"
                       value={nuevoComentario}
                       onChange={(e) => {
                         setNuevoComentario(e.target.value);
-                        setErrorComentario(null); // Limpiar error al escribir
+                        setErrorComentario(null);
                       }}
                       placeholder="Escribe tu comentario (mínimo 10 caracteres)..."
                       rows="3"
@@ -264,7 +325,8 @@ function AnimalCatalogo() {
                         padding: '0.5rem',
                         fontFamily: 'sans-serif',
                         borderRadius: '4px',
-                        border: '1px solid #ddd'
+                        border: '1px solid #ddd',
+                        boxSizing: 'border-box'
                       }}
                       disabled={enviandoComentario}
                     />
@@ -278,15 +340,20 @@ function AnimalCatalogo() {
 
                   <button
                     type="submit"
-                    disabled={enviandoComentario || !nuevoComentario.trim()}
+                    disabled={enviandoComentario || !nuevoComentario.trim() || !nuevoAutor.trim()}
                     style={{
                       padding: '0.5rem 1rem',
-                      backgroundColor: enviandoComentario || !nuevoComentario.trim() ? '#ccc' : '#0066cc',
+                      backgroundColor:
+                        enviandoComentario || !nuevoComentario.trim() || !nuevoAutor.trim()
+                          ? '#ccc'
+                          : '#0066cc',
                       color: 'white',
                       border: 'none',
                       borderRadius: '4px',
                       cursor:
-                        enviandoComentario || !nuevoComentario.trim() ? 'not-allowed' : 'pointer'
+                        enviandoComentario || !nuevoComentario.trim() || !nuevoAutor.trim()
+                          ? 'not-allowed'
+                          : 'pointer'
                     }}
                   >
                     {enviandoComentario ? 'Enviando...' : 'Enviar Comentario'}
